@@ -1,12 +1,4 @@
-import {
-  Typography,
-  Box,
-  Grid,
-  Paper,
-  Tabs,
-  Tab,
-  useTheme,
-} from "@mui/material";
+import { Typography, Box, Paper, Tabs, Tab, useTheme } from "@mui/material";
 import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import { TimeSeriesChart, BarChart } from "../components/Charts";
