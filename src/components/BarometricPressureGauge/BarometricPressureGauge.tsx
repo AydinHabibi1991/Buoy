@@ -310,7 +310,6 @@ export const BarometricPressureGauge = ({
       )}
 
       <PressureDisplayContainer>
-        {/* Main Pressure Display */}
         <MainPressureDisplay
           role="img"
           aria-label={`Current atmospheric pressure: ${pressureAnalysis.current.toFixed(
