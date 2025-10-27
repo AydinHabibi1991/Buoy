@@ -39,7 +39,7 @@ export const BuoyCharts = ({ data, buoyName }: BuoyChartsProps) => {
     );
   }
 
-  // Transform data for time series charts
+  // Transform data for  series charts
   const temperatureData = data.map((item) => ({
     date: new Date(item.timestamp).toLocaleDateString("en-US", {
       month: "short",
