@@ -76,15 +76,15 @@ export const BuoyCharts = ({ data, buoyName }: BuoyChartsProps) => {
     value: getChartValue(item.pressure),
   }));
 
-  // Calculate averages for bar chart (excluding null values)
+  // Calculate averages for bar chart
   const validTemperatureData = data.filter((item) =>
-    isValidNumber(item.temperature),
+    isValidNumber(item.temperature)
   );
   const validWaveHeightData = data.filter((item) =>
-    isValidNumber(item.waveHeight),
+    isValidNumber(item.waveHeight)
   );
   const validWindSpeedData = data.filter((item) =>
-    isValidNumber(item.windSpeed),
+    isValidNumber(item.windSpeed)
   );
   const validPressureData = data.filter((item) => isValidNumber(item.pressure));
 
@@ -95,7 +95,7 @@ export const BuoyCharts = ({ data, buoyName }: BuoyChartsProps) => {
         validTemperatureData.length > 0
           ? validTemperatureData.reduce(
               (sum, item) => sum + (item.temperature as number),
-              0,
+              0
             ) / validTemperatureData.length
           : 0,
     },
@@ -105,7 +105,7 @@ export const BuoyCharts = ({ data, buoyName }: BuoyChartsProps) => {
         validWaveHeightData.length > 0
           ? validWaveHeightData.reduce(
               (sum, item) => sum + (item.waveHeight as number),
-              0,
+              0
             ) / validWaveHeightData.length
           : 0,
     },
@@ -115,7 +115,7 @@ export const BuoyCharts = ({ data, buoyName }: BuoyChartsProps) => {
         validWindSpeedData.length > 0
           ? validWindSpeedData.reduce(
               (sum, item) => sum + (item.windSpeed as number),
-              0,
+              0
             ) / validWindSpeedData.length
           : 0,
     },
@@ -125,7 +125,7 @@ export const BuoyCharts = ({ data, buoyName }: BuoyChartsProps) => {
         validPressureData.length > 0
           ? validPressureData.reduce(
               (sum, item) => sum + (item.pressure as number),
-              0,
+              0
             ) / validPressureData.length
           : 0,
     },
