@@ -92,34 +92,34 @@ const TrendContainer = styled(Box)(() => ({
   width: "100%",
 }));
 
-const TrendItem = styled(Box)<{ direction: "up" | "down" | "stable" }>(({
-  theme,
-  direction,
-}) => {
-  const getColor = () => {
-    switch (direction) {
-      case "up":
-        return theme.palette.success.main;
-      case "down":
-        return theme.palette.error.main;
-      case "stable":
-        return theme.palette.text.secondary;
-    }
-  };
+const TrendItem = styled(Box)<{ direction: "up" | "down" | "stable" }>(
+  ({ theme, direction }) => {
+    const getColor = () => {
+      switch (direction) {
+        case "up":
+          return theme.palette.success.main;
+        case "down":
+          return theme.palette.error.main;
+        case "stable":
+        default:
+          return theme.palette.text.secondary;
+      }
+    };
 
-  return {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "4px 8px",
-    borderRadius: "6px",
-    backgroundColor: `${getColor()}15`,
-    border: `1px solid ${getColor()}30`,
-    color: getColor(),
-    fontSize: "0.75rem",
-    fontWeight: 500,
-  };
-});
+    return {
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+      padding: "4px 8px",
+      borderRadius: "6px",
+      backgroundColor: `${getColor()}15`,
+      border: `1px solid ${getColor()}30`,
+      color: getColor(),
+      fontSize: "0.75rem",
+      fontWeight: 500,
+    };
+  }
+);
 
 interface BarometricPressureGaugeProps {
   data: BuoyTimeSeriesData[];
@@ -135,31 +135,28 @@ export const BarometricPressureGauge = ({
   const pressureAnalysis = useMemo(() => {
     if (!data || data.length === 0) return null;
 
-    // Filter out invalid pressure readings
-    const validPressureData = data.filter(
-      (d) => isValidNumber(d.pressure) && (d.pressure as number) < 1100,
-    );
+    // Map all pressures and filter to guaranteed numbers
+    const pressures = data
+      .map((d) => d.pressure)
+      .filter((p): p is number => isValidNumber(p) && p < 1100);
 
-    if (validPressureData.length === 0) return null;
+    if (pressures.length === 0) return null;
 
-    const currentPressure =
-      validPressureData[validPressureData.length - 1]?.pressure || 0;
+    const currentPressure = pressures[pressures.length - 1];
 
-    // Calculate 24-hour trend (or available data range)
-    const pressureValues = validPressureData.map((d) => d.pressure);
-    const minPressure = Math.min(...pressureValues);
-    const maxPressure = Math.max(...pressureValues);
+    const minPressure = Math.min(...pressures);
+    const maxPressure = Math.max(...pressures);
     const avgPressure =
-      pressureValues.reduce((sum, p) => sum + p, 0) / pressureValues.length;
+      pressures.reduce((sum, p) => sum + p, 0) / pressures.length;
 
-    // Calculate recent trend (last 6 readings)
-    const recentReadings = validPressureData.slice(-6);
-    let trend = "stable";
+    // Recent trend (last 6 readings)
+    const recentValues = pressures.slice(-6);
+    let trend: "up" | "down" | "stable" = "stable";
     let trendValue = 0;
 
-    if (recentReadings.length >= 2) {
-      const oldValue = recentReadings[0].pressure;
-      const newValue = currentPressure;
+    if (recentValues.length >= 2) {
+      const oldValue = recentValues[0];
+      const newValue = recentValues[recentValues.length - 1];
       trendValue = newValue - oldValue;
 
       if (Math.abs(trendValue) < 1) {
@@ -207,10 +204,10 @@ export const BarometricPressureGauge = ({
       min: minPressure,
       max: maxPressure,
       average: avgPressure,
-      trend: trend as "up" | "down" | "stable",
+      trend,
       trendValue,
       status,
-      dataPoints: validPressureData.length,
+      dataPoints: pressures.length,
     };
   }, [data]);
 
@@ -227,13 +224,14 @@ export const BarometricPressureGauge = ({
       case "down":
         return "↘";
       case "stable":
+      default:
         return "→";
     }
   };
 
   const getTrendDescription = (
     trend: "up" | "down" | "stable",
-    value: number,
+    value: number
   ) => {
     const absValue = Math.abs(value);
     if (trend === "stable") return "Stable pressure";
@@ -315,7 +313,9 @@ export const BarometricPressureGauge = ({
         {/* Main Pressure Display */}
         <MainPressureDisplay
           role="img"
-          aria-label={`Current atmospheric pressure: ${pressureAnalysis.current.toFixed(1)} hectopascals, status: ${pressureAnalysis.status.label}`}
+          aria-label={`Current atmospheric pressure: ${pressureAnalysis.current.toFixed(
+            1
+          )} hectopascals, status: ${pressureAnalysis.status.label}`}
         >
           <PressureValue aria-live="polite">
             {pressureAnalysis.current.toFixed(1)}
@@ -352,7 +352,7 @@ export const BarometricPressureGauge = ({
             <Typography variant="caption" sx={{ fontWeight: "inherit" }}>
               {getTrendDescription(
                 pressureAnalysis.trend,
-                pressureAnalysis.trendValue,
+                pressureAnalysis.trendValue
               )}
             </Typography>
             {pressureAnalysis.trend !== "stable" && (

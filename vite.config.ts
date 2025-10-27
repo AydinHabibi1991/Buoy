@@ -11,10 +11,14 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/noaa/, ""),
         configure: (proxy) => {
-          proxy.on("error", (err, req, res) => {
+          proxy.on("error", (err, _req, _res) => {
+            // Mark unused params so TS doesn't complain
+            void _req;
+            void _res;
             console.log("Proxy error:", err);
           });
-          proxy.on("proxyReq", (proxyReq, req) => {
+          proxy.on("proxyReq", (proxyReq, _req) => {
+            void _req;
             console.log("Proxying request to:", proxyReq.path);
           });
         },
